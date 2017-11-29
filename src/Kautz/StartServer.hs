@@ -6,16 +6,16 @@ import Import
 
 import Control.Concurrent
 
-import Kautz.SockAddr
-
-import Test.QuickCheck.Gen
-
-import qualified Data.Map.Lazy as ML
-import Data.Map.Lazy (Map)
-
 import Network.Socket
        hiding (recv, recvFrom, recvLen, send, sendTo)
 import Network.Socket.ByteString
+
+import Kautz.Neighbours
+import Kautz.SockAddr
+import Kautz.Types
+
+import Data.Map.Lazy (Map)
+import qualified Data.Map.Strict as MS
 
 startServer :: IO ()
 startServer = do
@@ -23,7 +23,7 @@ startServer = do
     setSocketOption sock ReuseAddr 1
     bind sock (SockAddrInet 4242 iNADDR_ANY)
     listen sock 2
-    let map = ML.empty
+    let map = MS.empty
     mainLoop sock map
 
 mainLoop :: Socket -> SockMap -> IO ()
@@ -38,19 +38,7 @@ runConn :: (Socket, SockAddr) -> SockMap -> IO SockMap
 runConn (sock, _) map = do
     (_, sockAddr) <- recvFrom sock 1
     kautzString <- newKautzString map
-    let newmap = ML.insert sockAddr kautzString map
+    updateNeighbours sockAddr kautzString map
+    let newmap = MS.insert sockAddr kautzString map
     close sock
     return newmap
-
-type Msg = ByteString
-
-type SockMap = Map SockAddr KautzString
-
-type KautzString = String
-
-newKautzString :: SockMap -> IO KautzString
-newKautzString map = do
-    string <- generate $ vectorOf 5 $ elements ['a', 'b', 'c', 'd', 'e']
-    if string `elem` ML.elems map
-        then newKautzString map
-        else pure string

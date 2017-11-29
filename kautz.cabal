@@ -22,6 +22,8 @@ library
                        Kautz.AddNote
                        Kautz.JSONUtils
                        Kautz.SockAddr
+                       Kautz.Neighbours
+                       Kautz.Types
                        Import
   build-depends:       base >= 4.7 && < 5,
                        validity >=0.4 && <0.5,

@@ -7,6 +7,7 @@ import Prelude as X
 import Data.ByteString as X (ByteString)
 import Data.Maybe as X
 import Data.Monoid as X
+import Data.Tuple as X
 import Path as X
 import Path.IO as X
 import System.Exit as X
