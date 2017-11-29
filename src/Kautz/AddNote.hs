@@ -2,5 +2,8 @@ module Kautz.AddNote where
 
 import Import
 
+import Network.Socket
+
 addNote :: IO ()
-addNote = putStrLn "add note"
+addNote = do
+    putStrLn "Added a note"
