@@ -21,6 +21,7 @@ library
                        Kautz.StartServer
                        Kautz.AddNote
                        Kautz.JSONUtils
+                       Kautz.SockAddr
                        Import
   build-depends:       base >= 4.7 && < 5,
                        validity >=0.4 && <0.5,

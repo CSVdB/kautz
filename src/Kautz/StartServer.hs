@@ -6,6 +6,8 @@ import Import
 
 import Control.Concurrent
 
+import Kautz.SockAddr
+
 import Test.QuickCheck.Gen
 
 import qualified Data.Map.Lazy as ML
