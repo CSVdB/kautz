@@ -5,6 +5,7 @@ module Import
 import Prelude as X
 
 import Data.ByteString as X (ByteString)
+import Data.List as X
 import Data.Maybe as X
 import Data.Monoid as X
 import Data.Tuple as X

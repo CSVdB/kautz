@@ -2,6 +2,11 @@ module Kautz.SeedServerInfo where
 
 import Network.Socket
        hiding (recv, recvFrom, recvLen, send, sendTo)
+import Network.Socket.ByteString
+
+import Data.Aeson (ToJSON)
+
+import Kautz.JSONUtils
 
 seedServerAddr :: SockAddr
 seedServerAddr = getAddrFromInt 4242
@@ -32,6 +37,12 @@ getSocketOnAddr addr = do
     sock <- getSocket
     bind sock addr
     pure sock
+
+sendToAddr :: (ToJSON a) => a -> SockAddr -> IO ()
+sendToAddr msg addr = do
+    sock <- getSocket
+    connect sock addr
+    sendAll sock $ encode msg
 
 getSeedServerSocket :: IO Socket
 getSeedServerSocket = getSocketOnAddr seedServerAddr

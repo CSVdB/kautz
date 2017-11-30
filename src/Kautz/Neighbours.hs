@@ -14,6 +14,7 @@ import qualified Data.Map.Strict as MS
 
 updateNeighbours :: SockAddr -> KautzString -> SockMap -> IO ()
 updateNeighbours addr kautzname sockmap = do
+    putStrLn "updating neighbours"
     let newReceivers = getNewReceivers kautzname sockmap
     mapM_ (uncurry (sendInfo addr)) newReceivers
     let newSenders = getNewSenders kautzname sockmap
@@ -30,19 +31,15 @@ kautzNeighbours :: KautzString -> KautzString -> Bool
 kautzNeighbours [] _ = False
 kautzNeighbours (_:xs) receiver =
     case reverse receiver of
-        [] -> False
         (_:ys) -> xs == reverse ys
+        _ -> False
 
--- Refactor this into separate parts for
--- 1. obtaining and closing the socket
--- 2. JSON-ing the message
--- 3. sending the message
 sendInfo :: SockAddr -> KautzString -> SockAddr -> IO ()
 sendInfo infoAddr infoName receiverAddr = do
-    sock <- getSocketOnAddr receiverAddr
+    sock <- getSocket
     let message = encode $ NodeInfo infoAddr infoName
+    connect sock receiverAddr
     sendAll sock message
-    close sock
 
 getNewSenders :: KautzString -> SockMap -> [SockAddr]
 getNewSenders kautzname =
