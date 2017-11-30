@@ -1,14 +1,22 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Kautz.SockAddr where
-
-import Import
+module Kautz.SockAddr
+    ( SockAddr(..)
+    , Socket(..)
+    , socket
+    , connect
+    , bind
+    , listen
+    , accept
+    , close
+    , PortNumber(..)
+    ) where
 
 import Network.Socket
+       hiding (recv, recvFrom, recvLen, send, sendTo)
 
 import Data.Aeson
-
-import qualified Data.Text as T
 
 instance FromJSON SockAddr where
     parseJSON =

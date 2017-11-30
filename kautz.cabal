@@ -1,66 +1,70 @@
-name:                kautz
-version:             0.1.0.0
-synopsis:            Short description of your package
-homepage:            https://github.com/githubuser/kautz#readme
-license:             BSD3
-license-file:        LICENSE
-author:              Nick Van den Broeck
-maintainer:          nick.van.den.broeck666@gmail.com
-copyright:           2017 Nick Van den Broeck
-category:            Web
-build-type:          Simple
-extra-source-files:  README.md
-cabal-version:       >=1.10
-
-description:         Implementation of a P2P Kautz graph network
-
-library
-  hs-source-dirs:      src
-  exposed-modules:     Kautz
-                       Kautz.OptParse
-                       Kautz.StartServer
-                       Kautz.AddNode
-                       Kautz.JSONUtils
-                       Kautz.SockAddr
-                       Kautz.Neighbours
-                       Kautz.Types
-                       Kautz.SeedServerInfo
-                       Kautz.NodeInfo
-                       Import
-  build-depends:       base >= 4.7 && < 5,
-                       validity >=0.4 && <0.5,
-                       bytestring >=0.10.8 && <0.11,
-                       text >=1.2 && <1.3,
-                       path >=0.5 && <0.6,
-                       network >=2.6 && <2.7,
-                       network-simple >=0.4 && <0.5,
-                       containers >=0.5 && <0.6,
-                       mtl >=2.2 && <2.3,
-                       aeson >=1.0 && <1.2,
-                       aeson-pretty >=0.8 && <0.9,
-                       QuickCheck >=2.9 && <2.11,
-                       path-io >=1.2 && <1.3
-  default-language:    Haskell2010
-
-executable kautz
-  hs-source-dirs:      app
-  main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base,
-                       kautz,
-                       network-transport >=0.4.4 && <0.5,
-                       network-transport-inmemory >=0.5 && <0.6
-  default-language:    Haskell2010
-
-test-suite kautz-test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Spec.hs
-  build-depends:       base,
-                       kautz
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
+name: kautz
+version: 0.1.0.0
+cabal-version: >=1.10
+build-type: Simple
+license: BSD3
+license-file: LICENSE
+copyright: 2017 Nick Van den Broeck
+maintainer: nick.van.den.broeck666@gmail.com
+homepage: https://github.com/githubuser/kautz#readme
+synopsis: Short description of your package
+description:
+    Implementation of a P2P Kautz graph network
+category: Web
+author: Nick Van den Broeck
+extra-source-files:
+    README.md
 
 source-repository head
-  type:     git
-  location: https://github.com/githubuser/kautz
+    type: git
+    location: https://github.com/githubuser/kautz
+
+library
+    exposed-modules:
+        Kautz
+        Kautz.OptParse
+        Kautz.StartServer
+        Kautz.AddNode
+        Kautz.JSONUtils
+        Kautz.SockAddr
+        Kautz.Neighbours
+        Kautz.Types
+        Kautz.SeedServerInfo
+        Kautz.NodeInfo
+        Import
+    build-depends:
+        base >=4.7 && <5,
+        bytestring >=0.10.8 && <0.11,
+        text >=1.2 && <1.3,
+        path >=0.5 && <0.6,
+        network >=2.6 && <2.7,
+        network-simple >=0.4 && <0.5,
+        containers >=0.5 && <0.6,
+        mtl >=2.2 && <2.3,
+        aeson >=1.0 && <1.2,
+        aeson-pretty >=0.8 && <0.9,
+        QuickCheck >=2.9 && <2.11,
+        path-io >=1.2 && <1.3
+    default-language: Haskell2010
+    hs-source-dirs: src
+
+executable kautz
+    main-is: Main.hs
+    build-depends:
+        base -any,
+        kautz -any,
+        network-transport >=0.4.4 && <0.5,
+        network-transport-inmemory >=0.5 && <0.6
+    default-language: Haskell2010
+    hs-source-dirs: app
+    ghc-options: -threaded -rtsopts -with-rtsopts=-N
+
+test-suite kautz-test
+    type: exitcode-stdio-1.0
+    main-is: Spec.hs
+    build-depends:
+        base -any,
+        kautz -any
+    default-language: Haskell2010
+    hs-source-dirs: test
+    ghc-options: -threaded -rtsopts -with-rtsopts=-N

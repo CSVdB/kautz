@@ -2,9 +2,6 @@ module Kautz.OptParse where
 
 import Import
 
-import Kautz.AddNode
-import Kautz.StartServer
-
 import System.Environment
 
 getInstructions :: IO Instructions

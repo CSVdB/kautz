@@ -1,14 +1,7 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Kautz.Neighbours where
 
 import Import
 
-import qualified Data.Aeson as JSON
-import Data.Aeson (FromJSON, ToJSON)
-
-import Network.Socket
-       hiding (recv, recvFrom, recvLen, send, sendTo)
 import Network.Socket.ByteString
 
 import Kautz.JSONUtils
@@ -20,24 +13,25 @@ import Kautz.Types
 import qualified Data.Map.Strict as MS
 
 updateNeighbours :: SockAddr -> KautzString -> SockMap -> IO ()
-updateNeighbours addr name map = do
-    let newReceivers = getNewReceivers name map
+updateNeighbours addr kautzname sockmap = do
+    let newReceivers = getNewReceivers kautzname sockmap
     mapM_ (uncurry (sendInfo addr)) newReceivers
-    let newSenders = getNewSenders name map
-    mapM_ (notifySender addr name) newSenders
+    let newSenders = getNewSenders kautzname sockmap
+    mapM_ (notifySender addr kautzname) newSenders
   where
-    notifySender addr name senderAddr = sendInfo senderAddr name addr
+    notifySender newAddr kautzName senderAddr =
+        sendInfo senderAddr kautzName newAddr
 
 getNewReceivers :: KautzString -> SockMap -> [(KautzString, SockAddr)]
-getNewReceivers name =
-    fmap swap . filter (kautzNeighbours name . snd) . MS.assocs
+getNewReceivers kautzname =
+    fmap swap . filter (kautzNeighbours kautzname . snd) . MS.assocs
 
 kautzNeighbours :: KautzString -> KautzString -> Bool
 kautzNeighbours [] _ = False
-kautzNeighbours (x:xs) receiver =
+kautzNeighbours (_:xs) receiver =
     case reverse receiver of
         [] -> False
-        (y:ys) -> xs == reverse ys
+        (_:ys) -> xs == reverse ys
 
 -- Refactor this into separate parts for
 -- 1. obtaining and closing the socket
@@ -51,5 +45,5 @@ sendInfo infoAddr infoName receiverAddr = do
     close sock
 
 getNewSenders :: KautzString -> SockMap -> [SockAddr]
-getNewSenders name =
-    fmap fst . filter (flip kautzNeighbours name . snd) . MS.assocs
+getNewSenders kautzname =
+    fmap fst . filter (flip kautzNeighbours kautzname . snd) . MS.assocs

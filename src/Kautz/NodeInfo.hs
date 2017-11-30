@@ -6,8 +6,6 @@ import Import
 
 import Data.Aeson
 
-import Network.Socket
-
 import Kautz.SockAddr
 import Kautz.Types
 

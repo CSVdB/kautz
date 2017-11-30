@@ -3,10 +3,6 @@
 
 module Kautz.AddNode where
 
-import Import
-
-import Network.Socket
-       hiding (recv, recvFrom, recvLen, send, sendTo)
 import Network.Socket.ByteString
 
 import Control.Concurrent
@@ -17,7 +13,6 @@ import Kautz.SeedServerInfo
 import Kautz.SockAddr
 import Kautz.Types
 
-import Data.Map.Lazy (Map)
 import qualified Data.Map.Strict as MS
 
 addNode :: IO ()
@@ -31,7 +26,7 @@ addNode = do
     putStrLn "I'm listening now"
 
 listenForever :: Socket -> NeighbourMap -> IO ()
-listenForever sock map = do
+listenForever sock sockmap = do
     listen sock 2
     (conn, _) <- accept sock
     message <- recv conn 1000
@@ -40,8 +35,8 @@ listenForever sock map = do
             Nothing -> do
                 putStrLn
                     "Seed server sent something else than a neighbour node."
-                pure map
-            Just NodeInfo {..} -> pure $ MS.insert address name map
+                pure sockmap
+            Just NodeInfo {..} -> pure $ MS.insert address name sockmap
     close conn
     listenForever sock newmap
 

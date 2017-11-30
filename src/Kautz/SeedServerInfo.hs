@@ -1,12 +1,13 @@
 module Kautz.SeedServerInfo where
 
 import Network.Socket
+       hiding (recv, recvFrom, recvLen, send, sendTo)
 
 seedServerAddr :: SockAddr
 seedServerAddr = getAddrFromInt 4242
 
 getAddrFromInt :: Int -> SockAddr
-getAddrFromInt x = SockAddrInet 0 hostAddr
+getAddrFromInt x = SockAddrInet (toEnum x) hostAddr
 
 hostAddr :: HostAddress
 hostAddr = iNADDR_ANY

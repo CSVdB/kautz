@@ -1,18 +1,12 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE DeriveGeneric #-}
 
 module Kautz
     ( kautz
     ) where
 
-import Data.Text (Text)
-import qualified Data.Text.Encoding as TE
-
 import Kautz.AddNode
 import Kautz.OptParse
 import Kautz.StartServer
-
-import Import
 
 kautz :: IO ()
 kautz = do

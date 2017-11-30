@@ -4,15 +4,12 @@ module Kautz.Types
 
 import Import
 
-import Network.Socket
-       hiding (recv, recvFrom, recvLen, send, sendTo)
-
 import Test.QuickCheck.Gen
+
+import Kautz.SockAddr
 
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as MS
-
-import Network.Socket
 
 type Msg = ByteString
 
@@ -21,10 +18,10 @@ type SockMap = Map SockAddr KautzString
 type KautzString = String
 
 newKautzString :: SockMap -> IO KautzString
-newKautzString map = do
+newKautzString sockmap = do
     string <- generate $ vectorOf 5 $ elements ['a', 'b', 'c', 'd', 'e']
-    if string `elem` MS.elems map
-        then newKautzString map
+    if string `elem` MS.elems sockmap
+        then newKautzString sockmap
         else pure string
 
 type NeighbourMap = Map SockAddr KautzString
