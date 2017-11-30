@@ -10,7 +10,11 @@ import Network.Socket
        hiding (recv, recvFrom, recvLen, send, sendTo)
 import Network.Socket.ByteString
 
+import qualified Data.Aeson as JSON
+
+import Kautz.JSONUtils
 import Kautz.Neighbours
+import Kautz.SeedServerInfo
 import Kautz.SockAddr
 import Kautz.Types
 
@@ -19,9 +23,7 @@ import qualified Data.Map.Strict as MS
 
 startServer :: IO ()
 startServer = do
-    sock <- socket AF_INET Stream 0
-    setSocketOption sock ReuseAddr 1
-    bind sock (SockAddrInet 4242 iNADDR_ANY)
+    sock <- getSeedServerSocket
     listen sock 2
     let map = MS.empty
     mainLoop sock map
@@ -36,9 +38,24 @@ mainLoop sock map = do
 
 runConn :: (Socket, SockAddr) -> SockMap -> IO SockMap
 runConn (sock, _) map = do
-    (_, sockAddr) <- recvFrom sock 1
-    kautzString <- newKautzString map
-    updateNeighbours sockAddr kautzString map
-    let newmap = MS.insert sockAddr kautzString map
-    close sock
-    return newmap
+    message <- recv sock 1
+    case decode message of
+        Nothing -> do
+            putStrLn $
+                "Someone tried to connect using the following message:" ++
+                show message
+            pure map
+        Just sockAddr -> do
+            newmap <-
+                if MS.member sockAddr map
+                    then do
+                        kautzString <- newKautzString map
+                        updateNeighbours sockAddr kautzString map
+                        pure $ MS.insert sockAddr kautzString map
+                    else do
+                        putStrLn $
+                            "Node " ++
+                            show sockAddr ++ " tried connecting again."
+                        pure map
+            close sock
+            pure newmap

@@ -9,7 +9,7 @@ import Network.Socket
 
 import Test.QuickCheck.Gen
 
-import Data.Map.Lazy (Map)
+import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as MS
 
 import Network.Socket
@@ -26,3 +26,5 @@ newKautzString map = do
     if string `elem` MS.elems map
         then newKautzString map
         else pure string
+
+type NeighbourMap = Map SockAddr KautzString

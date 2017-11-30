@@ -2,7 +2,7 @@ module Kautz.OptParse where
 
 import Import
 
-import Kautz.AddNote
+import Kautz.AddNode
 import Kautz.StartServer
 
 import System.Environment
@@ -16,10 +16,10 @@ getInstructions = do
 
 data Instructions
     = StartServer
-    | AddNote
+    | AddNode
     deriving (Show, Eq)
 
 readArgs :: [String] -> Maybe Instructions
 readArgs ["startserver"] = Just StartServer
-readArgs ["addnote"] = Just AddNote
+readArgs ["addnode"] = Just AddNode
 readArgs _ = Nothing

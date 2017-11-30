@@ -4,16 +4,17 @@ module Kautz.Neighbours where
 
 import Import
 
-import Data.Aeson
+import qualified Data.Aeson as JSON
+import Data.Aeson (FromJSON, ToJSON)
 
 import Network.Socket
        hiding (recv, recvFrom, recvLen, send, sendTo)
 import Network.Socket.ByteString
 
-import qualified Data.ByteString.Lazy as BL
-
+import Kautz.JSONUtils
+import Kautz.NodeInfo
+import Kautz.SeedServerInfo
 import Kautz.SockAddr
-
 import Kautz.Types
 
 import qualified Data.Map.Strict as MS
@@ -44,21 +45,10 @@ kautzNeighbours (x:xs) receiver =
 -- 3. sending the message
 sendInfo :: SockAddr -> KautzString -> SockAddr -> IO ()
 sendInfo infoAddr infoName receiverAddr = do
-    sock <- socket AF_INET Stream 0
-    setSocketOption sock ReuseAddr 1
-    bind sock receiverAddr
-    let message = BL.toStrict . encode $ NodeInfo infoAddr infoName
+    sock <- getSocketOnAddr receiverAddr
+    let message = encode $ NodeInfo infoAddr infoName
     sendAll sock message
     close sock
-
-data NodeInfo = NodeInfo
-    { address :: SockAddr
-    , name :: KautzString
-    } deriving (Show, Eq, Generic)
-
-instance FromJSON NodeInfo
-
-instance ToJSON NodeInfo
 
 getNewSenders :: KautzString -> SockMap -> [SockAddr]
 getNewSenders name =

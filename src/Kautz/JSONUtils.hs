@@ -38,3 +38,9 @@ writeJSON path value =
     liftIO $ do
         ensureDir $ parent path
         LB.writeFile (toFilePath path) (JSON.encodePretty value)
+
+encode :: (ToJSON a) => a -> ByteString
+encode = LB.toStrict . JSON.encode
+
+decode :: (FromJSON a) => ByteString -> Maybe a
+decode = JSON.decode . LB.fromStrict

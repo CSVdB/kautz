@@ -8,7 +8,7 @@ module Kautz
 import Data.Text (Text)
 import qualified Data.Text.Encoding as TE
 
-import Kautz.AddNote
+import Kautz.AddNode
 import Kautz.OptParse
 import Kautz.StartServer
 
@@ -21,4 +21,4 @@ kautz = do
 
 execute :: Instructions -> IO ()
 execute StartServer = startServer
-execute AddNote = addNote
+execute AddNode = addNode
