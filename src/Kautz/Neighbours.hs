@@ -10,22 +10,20 @@ import Kautz.SeedServerInfo
 import Kautz.SockAddr
 import Kautz.Types
 
-import qualified Data.Map.Strict as MS
-
-updateNeighbours :: SockAddr -> KautzString -> SockMap -> IO ()
-updateNeighbours addr kautzname sockmap = do
-    putStrLn "updating neighbours"
-    let newReceivers = getNewReceivers kautzname sockmap
+updateNeighbours :: SockAddr -> KautzString -> [NodeInfo] -> IO ()
+updateNeighbours addr kautzname nodeInfos = do
+    let newReceivers = getNewReceivers kautzname nodeInfos
     mapM_ (uncurry (sendInfo addr)) newReceivers
-    let newSenders = getNewSenders kautzname sockmap
+    let newSenders = getNewSenders kautzname nodeInfos
     mapM_ (notifySender addr kautzname) newSenders
   where
     notifySender newAddr kautzName senderAddr =
         sendInfo senderAddr kautzName newAddr
 
-getNewReceivers :: KautzString -> SockMap -> [(KautzString, SockAddr)]
+getNewReceivers :: KautzString -> [NodeInfo] -> [(KautzString, SockAddr)]
 getNewReceivers kautzname =
-    fmap swap . filter (kautzNeighbours kautzname . snd) . MS.assocs
+    fmap swap .
+    filter (kautzNeighbours kautzname . snd) . fmap getAddressAndName
 
 kautzNeighbours :: KautzString -> KautzString -> Bool
 kautzNeighbours [] _ = False
@@ -41,6 +39,7 @@ sendInfo infoAddr infoName receiverAddr = do
     connect sock receiverAddr
     sendAll sock message
 
-getNewSenders :: KautzString -> SockMap -> [SockAddr]
+getNewSenders :: KautzString -> [NodeInfo] -> [SockAddr]
 getNewSenders kautzname =
-    fmap fst . filter (flip kautzNeighbours kautzname . snd) . MS.assocs
+    fmap fst .
+    filter (flip kautzNeighbours kautzname . snd) . fmap getAddressAndName

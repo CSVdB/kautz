@@ -10,6 +10,7 @@ module Kautz.SockAddr
     , listen
     , accept
     , close
+    , getSocketName
     , PortNumber(..)
     ) where
 

@@ -2,31 +2,30 @@ module Kautz.Chan where
 
 import Import
 
-import Control.Concurrent (forkIO)
 import Control.Concurrent.STM.TChan
 import Control.Monad.STM
 
-import Kautz.Types
+import Kautz.NodeInfo
 
-type Channel = TChan SockMap
+type Channel = TChan NodeInfo
 
 cleanChannel :: Channel -> IO ()
-cleanChannel chan = do
-    _ <-
-        forkIO $
-        fix $ \loop -> do
-            _ <- atomically $ readTChan chan
-            loop
-    pure ()
+cleanChannel chan = void $ readTheRest chan []
 
-getLastElem :: Channel -> IO SockMap
-getLastElem chan = do
+readEverything :: Channel -> IO [NodeInfo]
+readEverything chan = do
+    nodeInfos <- readTheRest chan []
+    mapM_ (write chan) nodeInfos
+    pure nodeInfos
+
+readTheRest :: Channel -> [NodeInfo] -> IO [NodeInfo]
+readTheRest chan nodeinfos = do
     empty <- atomically $ isEmptyTChan chan
     if empty
-        then die "The channel is empty!"
+        then pure nodeinfos
         else do
-            sockmap <- atomically $ readTChan chan
-            emptied <- atomically $ isEmptyTChan chan
-            if emptied
-                then pure sockmap
-                else getLastElem chan
+            newNode <- atomically $ readTChan chan
+            readTheRest chan (newNode : nodeinfos)
+
+write :: Channel -> NodeInfo -> IO ()
+write chan nodeInfo = atomically $ writeTChan chan nodeInfo

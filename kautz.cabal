@@ -32,6 +32,7 @@ library
         Kautz.SeedServerInfo
         Kautz.NodeInfo
         Kautz.Chan
+        Kautz.KautzString
         Import
     build-depends:
         base >=4.9 && <5,
@@ -46,6 +47,7 @@ library
         aeson-pretty >=0.8 && <0.9,
         QuickCheck >=2.9 && <2.11,
         stm >=2.4 && <2.5,
+        hspec >=2.4 && <2.5,
         path-io >=1.2 && <1.3
     default-language: Haskell2010
     hs-source-dirs: src
@@ -66,7 +68,11 @@ test-suite kautz-test
     main-is: Spec.hs
     build-depends:
         base -any,
-        kautz -any
+        kautz -any,
+        hspec -any,
+        stm -any
     default-language: Haskell2010
     hs-source-dirs: test
+    other-modules:
+        KautzSpec
     ghc-options: -threaded -rtsopts -with-rtsopts=-N

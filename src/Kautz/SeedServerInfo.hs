@@ -32,10 +32,10 @@ getSocket = do
     setSocketOption sock ReuseAddr 1
     pure sock
 
-getSocketOnAddr :: SockAddr -> IO Socket
-getSocketOnAddr addr = do
+getBoundSocket :: IO Socket
+getBoundSocket = do
     sock <- getSocket
-    bind sock addr
+    bind sock $ SockAddrInet 0 hostAddr
     pure sock
 
 sendToAddr :: (ToJSON a) => a -> SockAddr -> IO ()
@@ -45,4 +45,7 @@ sendToAddr msg addr = do
     sendAll sock $ encode msg
 
 getSeedServerSocket :: IO Socket
-getSeedServerSocket = getSocketOnAddr seedServerAddr
+getSeedServerSocket = do
+    sock <- getSocket
+    bind sock seedServerAddr
+    pure sock
