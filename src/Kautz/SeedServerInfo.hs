@@ -17,18 +17,9 @@ getAddrFromInt x = SockAddrInet (toEnum x) hostAddr
 hostAddr :: HostAddress
 hostAddr = iNADDR_ANY
 
-dftFamily :: Family
-dftFamily = AF_INET
-
-dftSockType :: SocketType
-dftSockType = Stream
-
-dftProtocol :: ProtocolNumber
-dftProtocol = 0
-
 getSocket :: IO Socket
 getSocket = do
-    sock <- socket dftFamily dftSockType dftProtocol
+    sock <- socket AF_INET Stream 0
     setSocketOption sock ReuseAddr 1
     pure sock
 

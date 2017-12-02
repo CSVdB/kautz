@@ -6,20 +6,29 @@ import Test.QuickCheck.Gen
 
 type KautzString = String
 
-noEqualNeighbours :: KautzString -> Bool
-noEqualNeighbours [] = True
-noEqualNeighbours [_] = True
-noEqualNeighbours (x:(y:xs)) = x /= y && noEqualNeighbours (y : xs)
+newKautzString :: Int -> Int -> Gen KautzString
+newKautzString nChars kautzLength = do
+    let alph = kautzStringChars nChars
+    addToKautzStringGen alph kautzLength $ pure []
 
-newKautzString :: Gen KautzString
-newKautzString = do
-    x1 <- elements kautzStringChars
-    x2 <- elements $ delete x1 kautzStringChars
-    x3 <- elements $ delete x2 kautzStringChars
-    x4 <- elements $ delete x3 kautzStringChars
-    x5 <- elements $ delete x4 kautzStringChars
-    pure [x1, x2, x3, x4, x5]
+addToKautzStringGen :: String -> Int -> Gen String -> Gen String
+addToKautzStringGen _ 0 gen = gen
+addToKautzStringGen alph n gen = do
+    s <- gen
+    nextChar <-
+        case s of
+            "" -> elements alph
+            (x:_) -> elements $ delete x alph
+    addToKautzStringGen alph (n - 1) . pure $ nextChar : s
 
-kautzStringChars :: String
-kautzStringChars = "ab"
--- kautzStringChars = "abcde"
+kautzStringChars :: Int -> String
+kautzStringChars nChars = getMoreKautzChars nChars []
+
+getMoreKautzChars :: Int -> String -> String
+getMoreKautzChars 0 x = x
+getMoreKautzChars n [] = getMoreKautzChars (n - 1) "a"
+getMoreKautzChars n (x:xs) =
+    getMoreKautzChars (n - 1) $ getNextChar x : (x : xs)
+
+getNextChar :: Char -> Char
+getNextChar c = chr $ ord c + 1

@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Kautz
     ( kautz
@@ -14,5 +15,5 @@ kautz = do
     execute instructions
 
 execute :: Instructions -> IO ()
-execute StartServer = startServer
+execute StartServer {..} = startServer nOfChar lengthOfKautzString
 execute AddNode = addNode

@@ -27,7 +27,5 @@ spec = do
             let node = NodeInfo (getAddrFromInt 0) "aba"
             write chan node
             _ <- readEverything chan
-            _ <- readEverything chan
-            _ <- readEverything chan
             nodes <- readEverything chan
             nodes `shouldBe` [node]

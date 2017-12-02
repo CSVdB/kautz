@@ -24,9 +24,9 @@ instance ToJSON NodeInfo
 getAddressAndName :: NodeInfo -> (SockAddr, KautzString)
 getAddressAndName NodeInfo {..} = (address, name)
 
-newKautzStringInList :: [NodeInfo] -> IO KautzString
-newKautzStringInList nodeInfos = do
-    s <- generate newKautzString
+newKautzStringInList :: [NodeInfo] -> Int -> Int -> IO KautzString
+newKautzStringInList nodeInfos nChars kautzLength = do
+    s <- generate $ newKautzString nChars kautzLength
     if s `elem` fmap name nodeInfos
-        then newKautzStringInList nodeInfos
+        then newKautzStringInList nodeInfos nChars kautzLength
         else pure s

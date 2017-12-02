@@ -16,23 +16,23 @@ import Kautz.NodeInfo
 import Kautz.SeedServerInfo
 import Kautz.SockAddr
 
-startServer :: IO ()
-startServer = do
+startServer :: Int -> Int -> IO ()
+startServer nChars kautzLength = do
     sock <- getSeedServerSocket
     chan <- newTChanIO
     cleanChannel chan
     listen sock 2
-    mainLoop sock chan
+    mainLoop sock chan nChars kautzLength
 
-mainLoop :: Socket -> Channel -> IO ()
-mainLoop sock chan = do
+mainLoop :: Socket -> Channel -> Int -> Int -> IO ()
+mainLoop sock chan nChars kautzLength = do
     conn <- accept sock
-    _ <- forkIO $ runConn conn chan
+    _ <- forkIO $ runConn conn chan nChars kautzLength
     putStrLn "Accepted a connection"
-    mainLoop sock chan
+    mainLoop sock chan nChars kautzLength
 
-runConn :: (Socket, SockAddr) -> Channel -> IO ()
-runConn (sock, sockAddr2) chan = do
+runConn :: (Socket, SockAddr) -> Channel -> Int -> Int -> IO ()
+runConn (sock, sockAddr2) chan nChars kautzLength = do
     msg <- recv sock 1000
     write chan $ NodeInfo sockAddr2 "ba"
     nodeInfos <- readEverything chan
@@ -42,7 +42,8 @@ runConn (sock, sockAddr2) chan = do
             if addr `elem` fmap address nodeInfos
                 then printConnectAgain addr
                 else do
-                    kautzString <- newKautzStringInList nodeInfos
+                    kautzString <-
+                        newKautzStringInList nodeInfos nChars kautzLength
                     updateNeighbours addr kautzString nodeInfos
                     write chan $ NodeInfo addr kautzString
                     putStrLn "Wrote nodeinfo to the channel"

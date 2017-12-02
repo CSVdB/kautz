@@ -18,9 +18,12 @@ readEverything chan = do
     mapM_ (write chan) nodeInfos
     pure nodeInfos
 
+isEmpty :: Channel -> IO Bool
+isEmpty = atomically . isEmptyTChan
+
 readTheRest :: Channel -> [NodeInfo] -> IO [NodeInfo]
 readTheRest chan nodeinfos = do
-    empty <- atomically $ isEmptyTChan chan
+    empty <- isEmpty chan
     if empty
         then pure nodeinfos
         else do

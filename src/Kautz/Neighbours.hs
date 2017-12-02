@@ -25,6 +25,11 @@ getNewReceivers kautzname =
     fmap swap .
     filter (kautzNeighbours kautzname . snd) . fmap getAddressAndName
 
+getNewSenders :: KautzString -> [NodeInfo] -> [SockAddr]
+getNewSenders kautzname =
+    fmap fst .
+    filter (flip kautzNeighbours kautzname . snd) . fmap getAddressAndName
+
 kautzNeighbours :: KautzString -> KautzString -> Bool
 kautzNeighbours [] _ = False
 kautzNeighbours (_:xs) receiver =
@@ -38,8 +43,3 @@ sendInfo infoAddr infoName receiverAddr = do
     let message = encode $ NodeInfo infoAddr infoName
     connect sock receiverAddr
     sendAll sock message
-
-getNewSenders :: KautzString -> [NodeInfo] -> [SockAddr]
-getNewSenders kautzname =
-    fmap fst .
-    filter (flip kautzNeighbours kautzname . snd) . fmap getAddressAndName

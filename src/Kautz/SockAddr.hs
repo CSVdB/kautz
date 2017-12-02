@@ -28,8 +28,8 @@ instance ToJSON SockAddr where
     toJSON (SockAddrInet port host) = object ["port" .= port, "host" .= host]
     toJSON _ = error "Only SockAddrInet can be turned into JSON"
 
-instance ToJSON PortNumber where
-    toJSON port = toJSON $ fromEnum port
-
 instance FromJSON PortNumber where
     parseJSON x = toEnum <$> parseJSON x
+
+instance ToJSON PortNumber where
+    toJSON port = toJSON $ fromEnum port
